@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="30dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:padding="5dip"
+        android:text="正在扫描音乐..."
+        android:textColor="#fff"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/scanMusic"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:gravity="center"
+        android:text="扫描音乐文件"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/startService"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:text="startService"
+        android:textColor="#fff"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/stopService"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:text="stopService"
+        android:textColor="#fff"
+        android:visibility="gone" />
+
+
+    <TextView
+        android:id="@+id/tv_now_play"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dip"
+        android:background="#ff4163"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:paddingLeft="80dip"
+        android:paddingRight="80dip"
+        android:singleLine="true"
+        android:text="当前正在播放:"
+        android:textColor="#fff"
+        android:textSize="18sp" />
+
+
+    <Button
+        android:id="@+id/bindService"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:text="开始播放"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/unbindService"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:text="停止播放"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/next"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:text="下一曲"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/previous"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@color/mainColor"
+        android:text="上一曲"
+        android:textColor="#fff" />
+
+
+</LinearLayout>
