@@ -70,12 +70,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initData();
 
+        bindPlayService();
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    private void bindPlayService() {
+
+        if (songPathList != null && songPathList.size() > 0) {
+            Intent bindService = new Intent(MainActivity.this, PlayService.class);
+            startService(bindService);
+            isConnected = bindService(bindService, musicServiceConnection, BIND_AUTO_CREATE);
+        }
     }
 
 
     private ServiceConnection musicServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
+            Log.d(TAG,"---------------------onServiceConnected");
             mService = ((PlayService.MyBinder) binder).getService();
             mService.setMusic(songPathList);
             mService.setOnPlayListener(new PlayService.OnPlayListener() {
@@ -85,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tv_now_play.setText(name);
                 }
             });
-            mService.start();
         }
 
         @Override
@@ -131,7 +149,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mService = null;
+        if (isConnected) {
+            unbindService(musicServiceConnection);
+        }
     }
 
     @Override
@@ -154,22 +174,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.bindService:
-                if (songPathList != null && songPathList.size() > 0) {
-                    Intent bindService = new Intent(MainActivity.this, PlayService.class);
-                    isConnected = bindService(bindService, musicServiceConnection, BIND_AUTO_CREATE);
+//                if (songPathList != null && songPathList.size() > 0 && mService != null) {
+//                    Intent bindService = new Intent(MainActivity.this, PlayService.class);
+//                    isConnected = bindService(bindService, musicServiceConnection, BIND_AUTO_CREATE);
+//                    //使用混合的方法开启服务，
+//                    startService(bindService);
+//                    mService.start();
+//                }
+
+                if (mService != null) {
+                    mService.start();
                 }
 
                 break;
             case R.id.unbindService:
-                if (isScanConntected) {
-                    unbindService(scanMusicServiceConnection);
-                    isScanConntected = false;
-                }
+//                if (isScanConntected) {
+//                    unbindService(scanMusicServiceConnection);
+//                    isScanConntected = false;
+//                }
+//
+//                if (isConnected) {
+//                    unbindService(musicServiceConnection);
+//                    isConnected = false;
+//                }
 
-                if (isConnected) {
-                    unbindService(musicServiceConnection);
-                    isConnected = false;
-                }
+                mService.stop();
+
                 break;
             case R.id.next:
                 if (isConnected) {
@@ -213,14 +243,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }.getType();
         List<String> list = gson.fromJson(data, listType);
 
+        tv_title.setVisibility(View.VISIBLE);
         if (list != null && list.size() > 0) {
             songPathList = list;
-            tv_title.setVisibility(View.VISIBLE);
             tv_title.setText("一共(" + songPathList.size() + ")首音乐");
         } else {
             scanSongs();
         }
-
 
     }
 }

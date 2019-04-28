@@ -28,11 +28,10 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "---------onCreate");
-        Log.d(TAG, "初始化播放器,只执行一次");
+        Log.d(TAG, "---------onCreate,初始化播放器,只执行一次");
 
-        sp = getApplicationContext().getSharedPreferences("song",MODE_PRIVATE);
-        musicIndex = sp.getInt("musicIndex",0);
+        sp = getApplicationContext().getSharedPreferences("song", MODE_PRIVATE);
+        musicIndex = sp.getInt("musicIndex", 0);
         //MediaPlayer.create(this,R.raw.sad);
         mediaPlayer = new MediaPlayer();
         player = new MusicPlayer();
@@ -66,35 +65,39 @@ public class PlayService extends Service {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(TAG, "--------------------onStart");
-        mediaPlayer.start();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("TAG", "-------------onStartCommand,执行多次");
+        Log.d(TAG, "-------------onStartCommand,执行多次:" + PlayService.this);
         return super.onStartCommand(intent, flags, startId);
     }
 
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "-------------------onBind:" + PlayService.this);
         return new MyBinder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "-------------------------onUnbind:" + PlayService.this);
         return super.onUnbind(intent);
     }
 
     public void setMusic(List<String> songs) {
         this.songs = songs;
 
-        try {
-            mediaPlayer.setDataSource(songs.get(musicIndex));
-            mediaPlayer.prepare();
-        } catch (Exception e) {
-            Log.d("hint", "can't get to the song");
-            e.printStackTrace();
+        if (!mediaPlayer.isPlaying()) {  //如果是startService导致Activity退出时音乐没有停止，再次进来 bindService Connection上时，会再次调用setMusic
+            try {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(songs.get(musicIndex));
+                mediaPlayer.prepare();
+            } catch (Exception e) {
+                Log.d("hint", "can't get to the song");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -106,6 +109,7 @@ public class PlayService extends Service {
      * 播放
      */
     public void start() {
+        Log.d(TAG, "-----------------音乐开始播放，bindService调用的");
         mediaPlayer.start();
         checkNowPlay();
     }
@@ -115,6 +119,7 @@ public class PlayService extends Service {
      */
     public void next() {
         player.next();
+        Log.d(TAG,"---------------------下一首,bindService调用的");
         if (mediaPlayer != null && musicIndex < songs.size()) {
             try {
                 mediaPlayer.stop();
@@ -124,7 +129,7 @@ public class PlayService extends Service {
                 mediaPlayer.seekTo(0);
                 mediaPlayer.start();
                 checkNowPlay();
-                sp.edit().putInt("musicIndex",musicIndex).commit();
+                sp.edit().putInt("musicIndex", musicIndex).commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -136,7 +141,7 @@ public class PlayService extends Service {
      */
     public void previous() {
         player.previous();
-
+        Log.d(TAG,"---------------------上一首,bindService调用的");
         if (mediaPlayer != null && musicIndex > 0) {
             try {
                 mediaPlayer.stop();
@@ -146,7 +151,7 @@ public class PlayService extends Service {
                 mediaPlayer.seekTo(0);
                 mediaPlayer.start();
                 checkNowPlay();
-                sp.edit().putInt("musicIndex",musicIndex).commit();
+                sp.edit().putInt("musicIndex", musicIndex).commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -154,6 +159,12 @@ public class PlayService extends Service {
         }
     }
 
+    public void stop() {
+        Log.d(TAG, "-----------------音乐暂停，bindService调用的");
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+    }
 
     /**
      * 检查当前播放的哪首音乐
@@ -170,10 +181,6 @@ public class PlayService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "----------onDestory");
-        player.stop();
-        player = null;
-
-        mediaPlayer.stop();
     }
 
 
